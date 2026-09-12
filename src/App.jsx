@@ -14,31 +14,31 @@ import {
    DESIGN TOKENS
 ============================================================================= */
 const C = {
-  bg: "#080B10",
-  surface: "#0D1219",
-  surface2: "#111821",
-  surface3: "#151D28",
-  border: "#202936",
-  borderStrong: "#2B3646",
-  text: "#F4F7FA",
-  textSecondary: "#8D99A8",
-  textMuted: "#5F6B78",
-  accent: "#3E9EFF",
-  accentSoft: "rgba(62,158,255,0.12)",
-  accentBorder: "rgba(62,158,255,0.35)",
-  success: "#2FB67C",
-  successSoft: "rgba(47,182,124,0.13)",
-  successBorder: "rgba(47,182,124,0.35)",
-  warning: "#D6A537",
-  warningSoft: "rgba(214,165,55,0.13)",
-  warningBorder: "rgba(214,165,55,0.35)",
-  critical: "#E5484D",
-  criticalSoft: "rgba(229,72,77,0.14)",
-  criticalBorder: "rgba(229,72,77,0.4)",
+  bg: "#16181A",
+  surface: "#1C1F21",
+  surface2: "#232628",
+  surface3: "#2A2D2F",
+  border: "#313436",
+  borderStrong: "#40443F",
+  text: "#ECEBE7",
+  textSecondary: "#A19D96",
+  textMuted: "#6B6862",
+  accent: "#3F8F82",
+  accentSoft: "rgba(63,143,130,0.13)",
+  accentBorder: "rgba(63,143,130,0.38)",
+  success: "#7A9A5C",
+  successSoft: "rgba(122,154,92,0.13)",
+  successBorder: "rgba(122,154,92,0.35)",
+  warning: "#BC8A3F",
+  warningSoft: "rgba(188,138,63,0.14)",
+  warningBorder: "rgba(188,138,63,0.35)",
+  critical: "#BD5B4C",
+  criticalSoft: "rgba(189,91,76,0.14)",
+  criticalBorder: "rgba(189,91,76,0.4)",
 };
 
-const FONT = "'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif";
-const MONO = "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace";
+const FONT = "'Source Sans 3', ui-sans-serif, system-ui, -apple-system, sans-serif";
+const MONO = "'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace";
 
 /* =============================================================================
    MOCK DATA — canonical incident: payment-service v1.8 rollback
@@ -233,7 +233,7 @@ function Badge({ children, tone = "neutral", size = "sm" }) {
       style={{
         background: t.bg, border: `1px solid ${t.border}`, color: t.color,
         padding: size === "sm" ? "2px 8px" : "4px 10px", borderRadius: 4,
-        fontWeight: 600, letterSpacing: "0.02em", textTransform: "uppercase",
+        fontWeight: 600,
         display: "inline-flex", alignItems: "center", gap: 5, whiteSpace: "nowrap",
       }}
     >
@@ -249,7 +249,7 @@ function Panel({ title, eyebrow, right, children, className = "", padded = true 
         <div className="flex items-center justify-between" style={{ padding: "14px 18px", borderBottom: `1px solid ${C.border}` }}>
           <div>
             {eyebrow && (
-              <div className="text-xs" style={{ color: C.textMuted, textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 600, marginBottom: 2 }}>
+              <div className="text-xs" style={{ color: C.textMuted, fontWeight: 600, marginBottom: 2 }}>
                 {eyebrow}
               </div>
             )}
@@ -266,7 +266,7 @@ function Panel({ title, eyebrow, right, children, className = "", padded = true 
 function KpiCard({ label, value, sub, tone }) {
   return (
     <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: "14px 16px", flex: 1, minWidth: 0 }}>
-      <div className="text-xs" style={{ color: C.textMuted, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>{label}</div>
+      <div className="text-xs" style={{ color: C.textMuted, fontWeight: 600 }}>{label}</div>
       <div className="tabular-nums" style={{ fontSize: 26, fontWeight: 700, color: tone || C.text, marginTop: 6, lineHeight: 1 }}>{value}</div>
       {sub && <div className="text-xs" style={{ color: C.textMuted, marginTop: 6 }}>{sub}</div>}
     </div>
@@ -276,7 +276,7 @@ function KpiCard({ label, value, sub, tone }) {
 function Metric({ label, value, direction, tone }) {
   return (
     <div>
-      <div className="text-xs" style={{ color: C.textMuted, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>{label}</div>
+      <div className="text-xs" style={{ color: C.textMuted, fontWeight: 600 }}>{label}</div>
       <div className="flex items-center gap-1 tabular-nums" style={{ fontSize: 20, fontWeight: 700, color: tone || C.text, marginTop: 4 }}>
         {value}
         {direction === "up" && <TrendingUp size={15} style={{ color: C.critical }} />}
@@ -306,7 +306,7 @@ function StageProgress({ stage }) {
               />
               <span
                 className="text-xs"
-                style={{ color, fontWeight: active ? 700 : 600, whiteSpace: "nowrap", textTransform: "uppercase", letterSpacing: "0.04em" }}
+                style={{ color, fontWeight: active ? 700 : 600, whiteSpace: "nowrap" }}
               >
                 {s.label}
               </span>
@@ -396,15 +396,15 @@ function Pending({ title, message, ctaLabel, onCta, icon: Icon = Clock }) {
 }
 
 const btnPrimary = {
-  background: C.accent, color: "#04101F", border: "none", borderRadius: 6,
+  background: C.accent, color: "#0E1F1C", border: "none", borderRadius: 4,
   padding: "9px 16px", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 8, cursor: "pointer",
 };
 const btnGhost = {
-  background: "transparent", color: C.text, border: `1px solid ${C.borderStrong}`, borderRadius: 6,
+  background: "transparent", color: C.text, border: `1px solid ${C.borderStrong}`, borderRadius: 4,
   padding: "9px 16px", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 8, cursor: "pointer",
 };
 const btnDanger = {
-  background: "transparent", color: C.textSecondary, border: `1px solid ${C.borderStrong}`, borderRadius: 6,
+  background: "transparent", color: C.textSecondary, border: `1px solid ${C.borderStrong}`, borderRadius: 4,
   padding: "9px 16px", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 8, cursor: "pointer",
 };
 
@@ -549,7 +549,7 @@ function Overview({ stage, onOpenIncident }) {
             <Metric label="Error Rate" value="42%" direction="up" tone={C.critical} />
             <Metric label="Latency" value="4.2s" direction="up" tone={C.critical} />
             <div>
-              <div className="text-xs" style={{ color: C.textMuted, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>Status</div>
+              <div className="text-xs" style={{ color: C.textMuted, fontWeight: 600 }}>Status</div>
               <div className="text-sm" style={{ color: C.accent, fontWeight: 700, marginTop: 4 }}>
                 {stage === "detected" ? "Detected" : stage === "investigating" ? "Investigating" : stage === "diagnosed" ? "Diagnosed" : "Remediation in progress"}
               </div>
@@ -574,7 +574,7 @@ function Overview({ stage, onOpenIncident }) {
           <thead>
             <tr style={{ borderBottom: `1px solid ${C.border}` }}>
               {["Service", "Status", "CPU", "Error Rate", "Latency", "Version"].map((h) => (
-                <th key={h} className="text-xs" style={{ textAlign: "left", padding: "10px 18px", color: C.textMuted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em" }}>{h}</th>
+                <th key={h} className="text-xs" style={{ textAlign: "left", padding: "10px 18px", color: C.textMuted, fontWeight: 600 }}>{h}</th>
               ))}
             </tr>
           </thead>
@@ -626,7 +626,7 @@ function IncidentsList({ stage, onOpenIncident }) {
           <thead>
             <tr style={{ borderBottom: `1px solid ${C.border}` }}>
               {["ID", "Service", "Cause", "Status", "Started"].map((h) => (
-                <th key={h} className="text-xs" style={{ textAlign: "left", padding: "10px 18px", color: C.textMuted, fontWeight: 600, textTransform: "uppercase" }}>{h}</th>
+                <th key={h} className="text-xs" style={{ textAlign: "left", padding: "10px 18px", color: C.textMuted, fontWeight: 600 }}>{h}</th>
               ))}
               <th />
             </tr>
@@ -878,7 +878,7 @@ function Remediation({ stage, onSimulate, onRequestApproval, onApprove, onReject
           <div className="flex gap-8">
             <Metric label="Confidence" value="89%" tone={C.accent} />
             <div>
-              <div className="text-xs" style={{ color: C.textMuted, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>Risk</div>
+              <div className="text-xs" style={{ color: C.textMuted, fontWeight: 600 }}>Risk</div>
               <div style={{ marginTop: 4 }}><Badge tone="success">Low</Badge></div>
             </div>
           </div>
@@ -915,7 +915,7 @@ function Remediation({ stage, onSimulate, onRequestApproval, onApprove, onReject
                 { label: "Latency", from: "4.2s", to: "180ms" },
               ].map((m) => (
                 <div key={m.label} style={{ background: C.surface2, border: `1px solid ${C.border}`, borderRadius: 6, padding: 12 }}>
-                  <div className="text-xs" style={{ color: C.textMuted, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>{m.label}</div>
+                  <div className="text-xs" style={{ color: C.textMuted, fontWeight: 600 }}>{m.label}</div>
                   <div className="flex items-center gap-2 tabular-nums" style={{ marginTop: 6, fontSize: 16, fontWeight: 700 }}>
                     <span style={{ color: C.textMuted, fontWeight: 500 }}>{m.from}</span>
                     <ArrowRight size={13} style={{ color: C.textMuted }} />
@@ -951,7 +951,7 @@ function Remediation({ stage, onSimulate, onRequestApproval, onApprove, onReject
             <div style={{ background: C.warningSoft, border: `1px solid ${C.warningBorder}`, borderRadius: 8, padding: 16 }}>
               <div className="flex items-center gap-2" style={{ marginBottom: 6 }}>
                 <ShieldAlert size={16} style={{ color: C.warning }} />
-                <span className="text-sm" style={{ color: C.warning, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.03em" }}>Approval Required</span>
+                <span className="text-sm" style={{ color: C.warning, fontWeight: 700 }}>Approval Required</span>
               </div>
               <div className="text-sm" style={{ color: C.textSecondary, marginBottom: 14 }}>Rollback affects production traffic.</div>
               <div className="flex gap-3">
@@ -1027,7 +1027,7 @@ function Recovery({ stage, execStep }) {
           <div style={{ background: C.successSoft, border: `1px solid ${C.successBorder}`, borderRadius: 8, padding: 20 }}>
             <div className="flex items-center gap-2" style={{ marginBottom: 4 }}>
               <ShieldCheck size={18} style={{ color: C.success }} />
-              <span className="text-base" style={{ color: C.success, fontWeight: 800, letterSpacing: "0.02em" }}>INCIDENT RESOLVED</span>
+              <span className="text-base" style={{ color: C.success, fontWeight: 700 }}>Incident resolved</span>
             </div>
             <div className="text-sm" style={{ color: C.textSecondary }}>Recovery verified</div>
           </div>
@@ -1040,7 +1040,7 @@ function Recovery({ stage, execStep }) {
                 { label: "Latency", from: "4.2s", to: "180ms" },
               ].map((m) => (
                 <div key={m.label} style={{ background: C.surface2, border: `1px solid ${C.border}`, borderRadius: 6, padding: 12 }}>
-                  <div className="text-xs" style={{ color: C.textMuted, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>{m.label}</div>
+                  <div className="text-xs" style={{ color: C.textMuted, fontWeight: 600 }}>{m.label}</div>
                   <div className="flex items-center gap-2 tabular-nums" style={{ marginTop: 6, fontSize: 16, fontWeight: 700 }}>
                     <span style={{ color: C.textMuted, fontWeight: 500 }}>{m.from}</span>
                     <ArrowRight size={13} style={{ color: C.textMuted }} />
@@ -1111,7 +1111,7 @@ function ActionLogPage({ stage }) {
           <thead>
             <tr style={{ borderBottom: `1px solid ${C.border}` }}>
               {["Timestamp", "Actor", "Action", "Approval", "Result"].map((h) => (
-                <th key={h} className="text-xs" style={{ textAlign: "left", padding: "10px 18px", color: C.textMuted, fontWeight: 600, textTransform: "uppercase" }}>{h}</th>
+                <th key={h} className="text-xs" style={{ textAlign: "left", padding: "10px 18px", color: C.textMuted, fontWeight: 600 }}>{h}</th>
               ))}
             </tr>
           </thead>
@@ -1156,7 +1156,7 @@ function ServicesPage({ stage }) {
           <Panel key={s.id}>
             <div className="flex items-center justify-between" style={{ marginBottom: 12 }}>
               <div className="text-sm" style={{ color: C.text, fontWeight: 700 }}>{s.id}</div>
-              <span className="flex items-center gap-2 text-xs" style={{ color: statusColor(s.status), fontWeight: 600, textTransform: "uppercase" }}>
+              <span className="flex items-center gap-2 text-xs" style={{ color: statusColor(s.status), fontWeight: 600, textTransform: "capitalize" }}>
                 <StatusDot status={s.status} pulse={s.status === "critical"} /> {s.status}
               </span>
             </div>
@@ -1274,7 +1274,7 @@ export default function CloudDoctorApp() {
   return (
     <div className="flex" style={{ height: "100vh", width: "100%", background: C.bg, color: C.text, fontFamily: FONT, overflow: "hidden" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
         * { box-sizing: border-box; }
         button { font-family: inherit; }
         table { font-variant-numeric: tabular-nums; }
