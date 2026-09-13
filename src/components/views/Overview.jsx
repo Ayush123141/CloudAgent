@@ -10,7 +10,7 @@ import Metric from "../common/Metric";
 import MetricChart from "../common/MetricChart";
 import { getStatusColor, MONO } from "../../styles/theme";
 import {
-  TIME_POINTS, CPU_SERIES, ERROR_SERIES, LATENCY_SERIES,
+  TIME_POINTS, CPU_SERIES, MEMORY_SERIES, ERROR_SERIES, LATENCY_SERIES,
   SERVICES_STATIC, chartCutoff
 } from "../../data/mockData";
 
@@ -20,13 +20,14 @@ export default function Overview({ stage, onOpenIncident }) {
   const active = stage !== "healthy" && !resolved;
 
   const cpuData = useMemo(() => TIME_POINTS.map((t, i) => ({ t, v: CPU_SERIES[i] })), []);
+  const memData = useMemo(() => TIME_POINTS.map((t, i) => ({ t, v: MEMORY_SERIES[i] })), []);
   const errData = useMemo(() => TIME_POINTS.map((t, i) => ({ t, v: ERROR_SERIES[i] })), []);
   const latData = useMemo(() => TIME_POINTS.map((t, i) => ({ t, v: LATENCY_SERIES[i] })), []);
   const cutoff = chartCutoff(stage);
 
   const paymentRow = resolved
-    ? { id: "payment-service", status: "healthy", cpu: 54, error: 3, latency: 180, version: "v1.7" }
-    : { id: "payment-service", status: "critical", cpu: 98, error: 42, latency: 4200, version: "v1.8" };
+    ? { id: "payment-service", status: "healthy", cpu: 54, memory: 60, error: 3, latency: 180, version: "v1.7" }
+    : { id: "payment-service", status: "critical", cpu: 98, memory: 94, error: 42, latency: 4200, version: "v1.8" };
   const services = [paymentRow, ...SERVICES_STATIC];
 
   return (
@@ -41,14 +42,14 @@ export default function Overview({ stage, onOpenIncident }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-black tracking-tight" style={{ color: theme.text }}>
-            Operations Overview
+            System-Wide Operations Overview
           </h1>
           <div className="text-sm font-medium" style={{ color: theme.textMuted, marginTop: 2 }}>
-            Real-time observability & autonomous incident diagnosis
+            Real-time observability, telemetry correlation & autonomous incident resolution
           </div>
         </div>
         <div
-          className="inline-flex items-center gap-2 text-sm font-semibold px-3 py-1.5 rounded-full"
+          className="inline-flex items-center gap-2 text-sm font-semibold px-3.5 py-1.5 rounded-full"
           style={{
             background: active ? theme.criticalSoft : theme.successSoft,
             border: `1px solid ${active ? theme.criticalBorder : theme.successBorder}`,
@@ -56,11 +57,11 @@ export default function Overview({ stage, onOpenIncident }) {
           }}
         >
           <StatusDot status={active ? "critical" : "healthy"} pulse={active} />
-          {active ? "Degraded — 1 active incident" : "Operational — all systems normal"}
+          {active ? "System Degraded — 1 Active SEV-1 Incident" : "System Operational — All Services Normal"}
         </div>
       </div>
 
-      {/* KPI Cards */}
+      {/* KPI Cards (DRD Section 5) */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3.5">
         <KpiCard label="System Health" value={active ? "84.6%" : "99.8%"} tone={active ? theme.warning : theme.success} />
         <KpiCard label="Active Incidents" value={active ? "1" : "0"} tone={active ? theme.critical : theme.success} />
@@ -69,7 +70,7 @@ export default function Overview({ stage, onOpenIncident }) {
         <KpiCard label="AI Confidence" value={stage === "healthy" || stage === "detected" ? "—" : "89%"} tone={theme.accent} />
       </div>
 
-      {/* Active Incident Banner */}
+      {/* Prominent Active-Incident Panel (DRD Section 5) */}
       {active ? (
         <motion.div
           layout
@@ -87,7 +88,7 @@ export default function Overview({ stage, onOpenIncident }) {
           <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
             <div>
               <div className="flex items-center gap-2.5 mb-2">
-                <Badge tone="critical">Critical Incident</Badge>
+                <Badge tone="critical">SEV-1 Critical Incident</Badge>
                 <span className="text-xs font-mono font-semibold" style={{ color: theme.textMuted, fontFamily: MONO }}>
                   INC-1042
                 </span>
@@ -95,8 +96,8 @@ export default function Overview({ stage, onOpenIncident }) {
               <div className="text-xl font-bold" style={{ color: theme.text }}>
                 Payment Service Degradation
               </div>
-              <div className="text-xs" style={{ color: theme.textMuted, marginTop: 4 }}>
-                payment-service · Production (us-east-1) · Started 10:24 AM · Duration 08m 42s
+              <div className="text-xs font-medium" style={{ color: theme.textMuted, marginTop: 4 }}>
+                Affected Service: <strong style={{ color: theme.text }}>payment-service</strong> · Production (us-east-1) · Started 10:24 AM · Duration 08m 42s
               </div>
             </div>
             <motion.button
@@ -119,22 +120,9 @@ export default function Overview({ stage, onOpenIncident }) {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-5 mt-4" style={{ borderTop: `1px solid ${theme.border}` }}>
             <Metric label="CPU Saturation" value="98%" direction="up" tone={theme.critical} />
+            <Metric label="Memory Saturation" value="94%" direction="up" tone={theme.critical} />
             <Metric label="Error Rate" value="42%" direction="up" tone={theme.critical} />
             <Metric label="P99 Latency" value="4.2s" direction="up" tone={theme.critical} />
-            <div>
-              <div className="text-xs uppercase tracking-wider font-semibold" style={{ color: theme.textMuted, fontSize: 11 }}>
-                Agent Status
-              </div>
-              <div className="text-sm font-bold mt-1" style={{ color: theme.accent }}>
-                {stage === "detected"
-                  ? "Detected"
-                  : stage === "investigating"
-                  ? "Investigating..."
-                  : stage === "diagnosed"
-                  ? "Root Cause Diagnosed"
-                  : "Remediation In Progress"}
-              </div>
-            </div>
           </div>
         </motion.div>
       ) : (
@@ -156,21 +144,21 @@ export default function Overview({ stage, onOpenIncident }) {
             </span>
           </div>
           <div className="text-base font-bold" style={{ color: theme.text }}>
-            Payment Service Degradation — recovery verified
+            Payment Service Degradation — Recovery Verified
           </div>
           <div className="text-xs" style={{ color: theme.textMuted, marginTop: 4 }}>
-            Rolled back payment-service v1.8 → v1.7 · Resolved in 11m 24s · Production healthy
+            Rolled back payment-service v1.8 → v1.7 · Resolved in 11m 24s · All service SLOs normal
           </div>
         </motion.div>
       )}
 
-      {/* Service Health Table */}
-      <Panel title="Service Fleet Status" padded={false}>
+      {/* Service-Health Table (DRD Section 5: service, status, CPU, memory, error rate, latency) */}
+      <Panel title="Service Fleet Health Status" padded={false}>
         <div style={{ overflowX: "auto" }}>
           <table className="w-full text-sm" style={{ borderCollapse: "collapse", textAlign: "left" }}>
             <thead>
               <tr style={{ borderBottom: `1px solid ${theme.border}`, background: theme.surface2 }}>
-                {["Service", "Status", "CPU", "Error Rate", "Latency", "Version"].map((h) => (
+                {["Service", "Status", "CPU", "Memory", "Error Rate", "Latency", "Version"].map((h) => (
                   <th key={h} className="text-xs font-bold uppercase tracking-wider" style={{ padding: "12px 18px", color: theme.textMuted, fontSize: 11 }}>
                     {h}
                   </th>
@@ -202,6 +190,9 @@ export default function Overview({ stage, onOpenIncident }) {
                     {s.cpu}%
                   </td>
                   <td className="tabular-nums font-semibold" style={{ padding: "13px 18px", color: theme.textSecondary }}>
+                    {s.memory || 58}%
+                  </td>
+                  <td className="tabular-nums font-semibold" style={{ padding: "13px 18px", color: theme.textSecondary }}>
                     {s.error}%
                   </td>
                   <td className="tabular-nums font-semibold" style={{ padding: "13px 18px", color: theme.textSecondary }}>
@@ -217,17 +208,16 @@ export default function Overview({ stage, onOpenIncident }) {
         </div>
       </Panel>
 
-      {/* Observability Telemetry Charts */}
+      {/* Observability Telemetry Charts (DRD Section 5: CPU, Memory, Error Rate, Latency in 2x2 grid) */}
       <div>
         <div className="text-sm font-bold uppercase tracking-wider mb-3" style={{ color: theme.textMuted, fontSize: 11 }}>
-          Live Telemetry Correlator
+          Live System Observability (CPU, Memory, Error Rate, Latency)
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <MetricChart title="Error Rate (%)" data={errData} unit="%" color={theme.critical} cutoffIdx={cutoff} />
           <MetricChart title="CPU Saturation (%)" data={cpuData} unit="%" color={theme.accent} cutoffIdx={cutoff} />
-        </div>
-        <div className="mt-4">
-          <MetricChart title="End-to-End Latency (ms)" data={latData} unit="ms" color={theme.warning} cutoffIdx={cutoff} height={140} />
+          <MetricChart title="Memory Usage (%)" data={memData} unit="%" color="#8B5CF6" cutoffIdx={cutoff} />
+          <MetricChart title="End-to-End Latency (ms)" data={latData} unit="ms" color={theme.warning} cutoffIdx={cutoff} />
         </div>
       </div>
     </motion.div>
