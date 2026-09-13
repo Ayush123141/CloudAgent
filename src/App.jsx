@@ -4,6 +4,8 @@ import { ThemeProvider, useTheme } from "./context/ThemeContext";
 import ParticleBackground from "./components/effects/ParticleBackground";
 import Sidebar from "./components/layout/Sidebar";
 import TopBar from "./components/layout/TopBar";
+import ToastContainer from "./components/common/ToastContainer";
+import IncidentCopilot from "./components/copilot/IncidentCopilot";
 import Overview from "./components/views/Overview";
 import IncidentsList from "./components/views/IncidentsList";
 import Investigation from "./components/views/Investigation";
@@ -22,6 +24,19 @@ function CloudDoctorMain() {
   const [stage, setStage] = useState("investigating");
   const [execStep, setExecStep] = useState(0);
   const [demoRunning, setDemoRunning] = useState(false);
+  const [toasts, setToasts] = useState([]);
+
+  const addToast = (title, message, type = "info") => {
+    const id = Date.now() + Math.random();
+    setToasts((prev) => [...prev.slice(-3), { id, title, message, type }]);
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 4500);
+  };
+
+  const removeToast = (id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
 
   useEffect(() => {
     if (stage !== "executing") {
@@ -39,7 +54,10 @@ function CloudDoctorMain() {
 
   useEffect(() => {
     if (stage === "executing" && execStep >= 5 && !demoRunning) {
-      const t = setTimeout(() => setStage("resolved"), 500);
+      const t = setTimeout(() => {
+        setStage("resolved");
+        addToast("Recovery Verified", "payment-service telemetry restored to healthy baseline SLA", "success");
+      }, 500);
       return () => clearTimeout(t);
     }
   }, [execStep, stage, demoRunning]);
@@ -47,10 +65,12 @@ function CloudDoctorMain() {
   function openInvestigation() {
     setPage("investigation");
     setStage((s) => (s === "healthy" || s === "detected" ? "investigating" : s));
+    addToast("Investigation Started", "Ingesting 7 multi-modal telemetry streams for INC-1042", "info");
   }
   function viewRootCause() {
     setStage("diagnosed");
     setPage("rootcause");
+    addToast("RCA Hypothesis Generated", "Database query regression identified (89% confidence)", "signal");
   }
   function viewRemediation() {
     setStage("remediation");
@@ -58,38 +78,46 @@ function CloudDoctorMain() {
   }
   function simulateFix() {
     setStage("simulated");
+    addToast("Sandbox Simulation Complete", "Predicted error rate drops from 42% to 3%", "shield");
   }
   function requestApproval() {
     setStage("approval");
+    addToast("Approval Requested", "Human SRE authorization required for production rollback", "signal");
   }
   function approveRollback() {
     setExecStep(0);
     setStage("executing");
     setPage("recovery");
+    addToast("Rollback Authorized", "Commencing rolling deployment downgrade v1.8 → v1.7", "shield");
   }
   function rejectRollback() {
     setStage("rejected");
+    addToast("Action Rejected", "Rollback cancelled by engineer. Incident remains open.", "critical");
   }
 
   function runDemo() {
     if (demoRunning) return;
     setDemoRunning(true);
+    addToast("Simulation Initiated", "Running automated SRE incident lifecycle walkthrough", "info");
+
     const seq = [
       { stage: "healthy", page: "overview", delay: 1500 },
-      { stage: "detected", page: "overview", delay: 1700 },
-      { stage: "investigating", page: "investigation", delay: 2600 },
-      { stage: "diagnosed", page: "rootcause", delay: 2400 },
-      { stage: "remediation", page: "remediation", delay: 1700 },
-      { stage: "simulated", page: "remediation", delay: 1900 },
-      { stage: "approval", page: "remediation", delay: 2000 },
-      { stage: "executing", page: "recovery", delay: 3000 },
-      { stage: "resolved", page: "recovery", delay: 0 },
+      { stage: "detected", page: "overview", delay: 1700, toast: { title: "🚨 Critical Incident Detected", message: "CPU threshold >90% breached on payment-service", type: "critical" } },
+      { stage: "investigating", page: "investigation", delay: 2600, toast: { title: "🤖 Telemetry Correlation", message: "CloudDoctor ingested logs, metrics, traces, and git diffs", type: "info" } },
+      { stage: "diagnosed", page: "rootcause", delay: 2400, toast: { title: "🔍 Root Cause Diagnosed", message: "Database query regression in commit 9f4a1c2 (89% confidence)", type: "signal" } },
+      { stage: "remediation", page: "remediation", delay: 1700, toast: { title: "📋 Remediation Proposed", message: "Automated rollback v1.8 → v1.7 recommended", type: "shield" } },
+      { stage: "simulated", page: "remediation", delay: 1900, toast: { title: "🧪 Sandbox Passed", message: "Digital twin confirms 93% error rate recovery", type: "shield" } },
+      { stage: "approval", page: "remediation", delay: 2000, toast: { title: "🛡️ Safety Gate", message: "Human SRE approval granted for production traffic shift", type: "signal" } },
+      { stage: "executing", page: "recovery", delay: 3000, toast: { title: "⚡ Executing Rollback", message: "Canary traffic shifting to v1.7", type: "shield" } },
+      { stage: "resolved", page: "recovery", delay: 0, toast: { title: "✅ Incident Resolved", message: "Telemetry restored to 100% normal SLA in 11m 24s", type: "success" } },
     ];
+
     let t = 0;
     seq.forEach((step, i) => {
       setTimeout(() => {
         setStage(step.stage);
         setPage(step.page);
+        if (step.toast) addToast(step.toast.title, step.toast.message, step.toast.type);
         if (step.stage === "executing") setExecStep(0);
         if (i === seq.length - 1) setDemoRunning(false);
       }, t);
@@ -134,6 +162,9 @@ function CloudDoctorMain() {
       {/* Ambient Particle JS Canvas Effect */}
       <ParticleBackground />
 
+      {/* Toast Notification Container */}
+      <ToastContainer toasts={toasts} onDismiss={removeToast} />
+
       {/* Navigation Sidebar */}
       <Sidebar page={page} setPage={setPage} />
 
@@ -175,6 +206,9 @@ function CloudDoctorMain() {
           </AnimatePresence>
         </main>
       </div>
+
+      {/* Floating AI Incident Copilot */}
+      <IncidentCopilot stage={stage} />
     </div>
   );
 }

@@ -1,15 +1,17 @@
-import React from "react";
-import { CheckCircle2, Circle, Loader2, ShieldCheck, ArrowRight, Clock } from "lucide-react";
+import React, { useState } from "react";
+import { CheckCircle2, Circle, Loader2, ShieldCheck, ArrowRight, Clock, FileText } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTheme } from "../../context/ThemeContext";
 import Badge from "../common/Badge";
 import Panel from "../common/Panel";
 import Pending from "../common/Pending";
+import PostMortemModal from "./PostMortemModal";
 import { STAGE_RANK } from "../../data/mockData";
 import { MONO } from "../../styles/theme";
 
 export default function Recovery({ stage, execStep }) {
   const { theme } = useTheme();
+  const [isPostMortemOpen, setIsPostMortemOpen] = useState(false);
 
   if (STAGE_RANK[stage] < STAGE_RANK.executing) {
     return (
@@ -40,13 +42,32 @@ export default function Recovery({ stage, execStep }) {
       transition={{ duration: 0.3 }}
       style={{ padding: 28, display: "flex", flexDirection: "column", gap: 22, maxWidth: 840, margin: "0 auto" }}
     >
-      <div>
-        <h1 className="text-2xl font-black tracking-tight" style={{ color: theme.text }}>
-          Remediation Execution & Recovery
-        </h1>
-        <div className="text-sm font-medium" style={{ color: theme.textMuted, marginTop: 2 }}>
-          INC-1042 · Live Rollback execution on payment-service
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-black tracking-tight" style={{ color: theme.text }}>
+            Remediation Execution & Recovery
+          </h1>
+          <div className="text-sm font-medium" style={{ color: theme.textMuted, marginTop: 2 }}>
+            INC-1042 · Live Rollback execution on payment-service
+          </div>
         </div>
+        {resolved && (
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => setIsPostMortemOpen(true)}
+            className="flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-md cursor-pointer"
+            style={{
+              background: theme.accent,
+              color: "#FFFFFF",
+              border: "none",
+              boxShadow: `0 2px 10px ${theme.accent}40`,
+            }}
+          >
+            <FileText size={14} />
+            Generate Post-Mortem Report
+          </motion.button>
+        )}
       </div>
 
       {/* Execution Stepper */}
@@ -173,6 +194,9 @@ export default function Recovery({ stage, execStep }) {
           </Panel>
         </motion.div>
       )}
+
+      {/* Post-Mortem Modal */}
+      <PostMortemModal isOpen={isPostMortemOpen} onClose={() => setIsPostMortemOpen(false)} />
     </motion.div>
   );
 }
